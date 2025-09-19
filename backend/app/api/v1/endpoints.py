@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
-from app.schemas.prediction import AnalysisInput, AnalysisOutput, AnalysisResult
-import time
+from app.schemas.prediction import AnalysisInput, AnalysisOutput
+from app.services.ai_service import ai_service
 
 router = APIRouter()
 
@@ -10,8 +10,6 @@ async def ping():
 
 @router.post("/analyze", response_model=AnalysisOutput)
 async def analyze(input_data: AnalysisInput):
-    start = time.time()
-
     if input_data.task != "sentiment":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -22,15 +20,7 @@ async def analyze(input_data: AnalysisInput):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="input_text é obrigatório para análise de sentimento."
         )
+    return await ai_service.analyze_sentiment_local(input_data.input_text)
 
-    result = AnalysisResult(label="NEUTRAL", score=0.0)
-    elapsed = (time.time() - start) * 1000
-
-    return AnalysisOutput(
-        task="sentiment",
-        engine="local:pending",
-        result=result,
-        elapsed_ms=elapsed
-    )
 
 
