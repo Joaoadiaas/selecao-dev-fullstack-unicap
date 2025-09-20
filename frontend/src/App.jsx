@@ -12,12 +12,7 @@ export default function App() {
     e.preventDefault();
     setError("");
     setResult(null);
-
-    if (!text.trim()) {
-      setError("Digite um texto para analisar.");
-      return;
-    }
-
+    if (!text.trim()) { setError("Digite um texto para analisar."); return; }
     try {
       setLoading(true);
       const data = await analyzeSentiment({ text, useExternal });
@@ -29,65 +24,62 @@ export default function App() {
     }
   }
 
-  return (
-    <div style={{ maxWidth: 720, margin: "40px auto", fontFamily: "Inter, system-ui, Arial", padding: 16 }}>
-      <h1 style={{ marginBottom: 8 }}>Analisador de Sentimento</h1>
-      <form onSubmit={onSubmit} style={{ display: "grid", gap: 12, marginTop: 16 }}>
-        <textarea
-          rows={5}
-          placeholder="Ex: O atendimento foi excelente, recomendo muito!"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          style={{ padding: 12, fontSize: 16, borderRadius: 8, border: "1px solid #ddd" }}
-        />
-        <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <input
-            type="checkbox"
-            checked={useExternal}
-            onChange={(e) => setUseExternal(e.target.checked)}
-          />
-          Usar IA Externa (desmarcado = local)
-        </label>
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            padding: "10px 16px",
-            fontSize: 16,
-            borderRadius: 8,
-            border: "1px solid #111",
-            background: loading ? "#eee" : "#111",
-            color: loading ? "#111" : "#fff",
-            cursor: loading ? "not-allowed" : "pointer",
-          }}
-        >
-          {loading ? "Analisando..." : "Analisar"}
-        </button>
-      </form>
+  const label = result?.result?.label || "";
+  const labelClass = label === "POSITIVE" ? "badge-label pos" : label === "NEGATIVE" ? "badge-label neg" : "badge-label neu";
 
-      {error && (
-        <div style={{ marginTop: 16, padding: 12, border: "1px solid #e00", borderRadius: 8, color: "#900", background: "#fee" }}>
-          Erro: {error}
-        </div>
-      )}
+  return (
+    <div className="container">
+      <h1 className="title">Analisador de Sentimento</h1>
+
+      <div className="card">
+        <form className="form" onSubmit={onSubmit}>
+          <textarea
+            className="textarea"
+            placeholder="Ex: O atendimento foi excelente, recomendo muito!"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+          <label className="row">
+            <input type="checkbox" checked={useExternal} onChange={(e)=>setUseExternal(e.target.checked)} />
+            Usar IA Externa (desmarcado = local)
+          </label>
+          <button className="btn" type="submit" disabled={loading}>
+            {loading ? "Analisando..." : "Analisar"}
+          </button>
+        </form>
+      </div>
+
+      {error && <div className="alert">Erro: {error}</div>}
 
       {result && (
-        <div style={{ marginTop: 16, padding: 16, border: "1px solid #ddd", borderRadius: 12 }}>
-          <div style={{ display: "flex", gap: 8, alignItems: "baseline", marginBottom: 8 }}>
-            <span style={{ fontSize: 14, color: "#666" }}>Engine:</span>
-            <strong>{result.engine}</strong>
+        <div className="card result">
+          <div className="meta">
+            <span>Engine:</span><strong>{result.engine}</strong>
+            <span>Label:</span><span className={labelClass}>{label}</span>
+            <span>Score:</span><strong>{Number(result.result?.score).toFixed(3)}</strong>
+            <span>Tempo:</span><span>{Number(result.elapsed_ms).toFixed(2)} ms</span>
           </div>
-          <div style={{ display: "flex", gap: 8, alignItems: "baseline", marginBottom: 8 }}>
-            <span style={{ fontSize: 14, color: "#666" }}>Label:</span>
-            <strong>{result.result?.label}</strong>
-            <span style={{ fontSize: 14, color: "#666" }}>Score:</span>
-            <strong>{Number(result.result?.score).toFixed(3)}</strong>
-          </div>
-          <pre style={{ background: "#f7f7f8", padding: 12, borderRadius: 8, overflowX: "auto" }}>
-            {JSON.stringify(result, null, 2)}
-          </pre>
+
+          {/* Se um dia voltarmos a enviar tokens, basta descomentar a UI abaixo
+          {Array.isArray(result?.result?.tokens) && result.result.tokens.length > 0 && (
+            <>
+              <div className="small">Palavras que influenciaram:</div>
+              <div className="chips">
+                {result.result.tokens.map((t, i) => (
+                  <span key={i} className={`chip ${t.category === "positive" ? "pos" : t.category === "negative" ? "neg" : ""}`}>
+                    <strong>{t.token}</strong>
+                    <span className="small">{(Math.abs(t.weight)).toFixed(1)}</span>
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
+          */}
+
+          <pre className="small">{JSON.stringify(result, null, 2)}</pre>
         </div>
       )}
     </div>
   );
 }
+
