@@ -30,14 +30,16 @@
 - **Node 18+** e **npm**
 
 
-      -BACKEND-
+### BACKEND
 
 cd backend
 python -m venv venv
+
 # Windows (PowerShell)
 .\venv\Scripts\Activate.ps1
+
 # Linux/Mac
-# source venv/bin/activate
+source venv/bin/activate
 
 pip install -r requirements.txt
 uvicorn app.main:app --port 8000
@@ -49,7 +51,7 @@ http://localhost:8000/api/v1/ping → {"ok": true}
 
 Docs Swagger: http://localhost:8000/docs
 
-        -FRONTEND-
+### FRONTEND
 Crie o arquivo .env dentro de frontend/ com:
 VITE_API_BASE_URL=http://localhost:8000/api/v1
 Depois rode:
