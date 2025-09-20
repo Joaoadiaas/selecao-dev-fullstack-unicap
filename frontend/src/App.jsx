@@ -18,11 +18,10 @@ export default function App() {
 
   // histórico por produto: { [produto]: Array<{text,label,score,at}> }
   const [history, setHistory] = useState({});
-
   const currentHistory = useMemo(() => history[product] ?? [], [history, product]);
 
   async function onSubmit(e) {
-    e.preventDefault();
+    e?.preventDefault?.();
     setError("");
     setResult(null);
 
@@ -54,8 +53,17 @@ export default function App() {
     }
   }
 
+  function handleKeyDown(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      if (!loading) onSubmit(e);
+    }
+  }
+
   const label = result?.result?.label || "";
-  const labelClass = label === "POSITIVE" ? "badge-label pos" : label === "NEGATIVE" ? "badge-label neg" : "badge-label neu";
+  const labelClass =
+    label === "POSITIVE" ? "badge-label pos" :
+    label === "NEGATIVE" ? "badge-label neg" : "badge-label neu";
 
   return (
     <div className="container">
@@ -63,19 +71,25 @@ export default function App() {
 
       <div className="card">
         <form className="form" onSubmit={onSubmit}>
-          {/* Linha de contexto: produto */}
+          {/* Produto */}
           <div className="row" style={{ gap: 8 }}>
             <span className="small">Produto:</span>
             <select
               value={product}
               onChange={(e) => setProduct(e.target.value)}
               style={{
-                background: "#0b0d14", color: "var(--text)", border: "1px solid var(--border)",
-                borderRadius: 8, padding: "8px 10px"
+                background: "#0b0d14",
+                color: "var(--text)",
+                border: "1px solid var(--border)",
+                borderRadius: 8,
+                padding: "8px 10px"
               }}
             >
               {PRODUCTS.map(p => <option key={p} value={p}>{p}</option>)}
             </select>
+            <span className="small" style={{ marginLeft: 8 }}>
+              (Enter = analisar • Shift+Enter = nova linha)
+            </span>
           </div>
 
           <textarea
@@ -83,11 +97,16 @@ export default function App() {
             placeholder="Cole aqui o feedback do cliente para este produto..."
             value={text}
             onChange={(e) => setText(e.target.value)}
+            onKeyDown={handleKeyDown}
             maxLength={5000}
           />
 
           <label className="row">
-            <input type="checkbox" checked={useExternal} onChange={(e)=>setUseExternal(e.target.checked)} />
+            <input
+              type="checkbox"
+              checked={useExternal}
+              onChange={(e)=>setUseExternal(e.target.checked)}
+            />
             Usar IA Externa (desmarcado = local)
           </label>
 
@@ -116,19 +135,26 @@ export default function App() {
       <div className="card result">
         <div className="meta"><strong>Histórico (últimos 5) — {product}</strong></div>
         {currentHistory.length === 0 ? (
-          <div className="small" style={{ padding: "0 16px 12px" }}>Sem análises para este produto ainda.</div>
+          <div className="small" style={{ padding: "0 16px 12px" }}>
+            Sem análises para este produto ainda.
+          </div>
         ) : (
           <ul style={{ listStyle: "none", padding: "0 16px 16px", margin: 0 }}>
             {currentHistory.map((h, i) => (
               <li key={i} style={{ padding: "10px 0", borderBottom: "1px solid var(--border)" }}>
                 <div className="row" style={{ gap: 10 }}>
-                  <span className={h.label === "POSITIVE" ? "badge-label pos" : h.label === "NEGATIVE" ? "badge-label neg" : "badge-label neu"}>
+                  <span className={
+                    h.label === "POSITIVE" ? "badge-label pos" :
+                    h.label === "NEGATIVE" ? "badge-label neg" : "badge-label neu"
+                  }>
                     {h.label}
                   </span>
                   <span className="small">score {h.score.toFixed(3)}</span>
                   <span className="small">em {new Date(h.at).toLocaleString()}</span>
                 </div>
-                <div className="small" style={{ marginTop: 6, color: "var(--text)" }}>{h.text}</div>
+                <div className="small" style={{ marginTop: 6, color: "var(--text)" }}>
+                  {h.text}
+                </div>
               </li>
             ))}
           </ul>
