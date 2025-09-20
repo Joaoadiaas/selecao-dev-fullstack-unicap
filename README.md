@@ -1,76 +1,111 @@
+🚀 Analisador de Sentimento (PT/EN) – Fullstack
 
-**Camadas**  
-- **API**: `app/api/v1/endpoints.py`  
-- **Contratos**: `app/schemas/prediction.py`  
-- **Serviço de IA**: `app/services/ai_service.py`  
-- **Utilidades de idioma**: `app/services/lang_utils.py` (léxico PT/EN expandido)  
-- **Frontend**: `src/App.jsx` (seletor de produto + histórico)  
+Aplicação fullstack desenvolvida como desafio técnico.
+Integra FastAPI (backend) e React + Vite (frontend) para análise de sentimentos em Português e Inglês, com suporte a vocabulário expandido em domínios específicos (Privacidade, SAC, Portal, Aplicativo).
 
----
+📌 Arquitetura
+desafio/
+│── backend/
+│   ├── app/
+│   │   ├── api/v1/endpoints.py   # Endpoints REST
+│   │   ├── schemas/prediction.py # Modelos de request/response
+│   │   ├── services/ai_service.py # Serviço de análise
+│   │   └── services/lang_utils.py # Utilidades de idioma (PT/EN)
+│── frontend/
+│   └── src/App.jsx               # UI principal (formulário + histórico)
 
-## Funcionalidades
+⚙️ Funcionalidades
 
-- **PT/EN autodetectado** com pré-processamento.  
-- **Léxico PT customizado** cobre:
-  - **Privacidade**: “vazaram dados”, “violação”, “seguro”, “transparente”  
-  - **SAC**: “atendimento excelente”, “fila de espera”, “não resolveu”  
-  - **Portal**: “portal claro”, “difícil acesso”, “erro no portal”  
-  - **App**: “adorei a atualização”, “instável”, “confuso”, “travando”  
-- **Frontend contextualizado**:
-  - Dropdown de **Produto** (Portal, Política de Privacidade, SAC, App).  
-  - **Histórico local** (últimos 5 feedbacks por produto).  
-  - Tema escuro estilizado, badges coloridas (POSITIVE/NEGATIVE/NEUTRAL).  
+Análise de Sentimento (PT/EN) com detecção automática de idioma.
 
----
+Vocabulário customizado (PT):
 
-## Como rodar localmente
+Privacidade: “vazaram dados”, “violação”, “seguro”, “transparente”.
 
-### Requisitos
-- **Python 3.10+** e **pip**
-- **Node 18+** e **npm**
+SAC: “atendimento excelente”, “fila de espera”, “não resolveu”.
 
+Portal: “portal claro”, “difícil acesso”, “erro no portal”.
 
-### BACKEND
+App: “adorei a atualização”, “instável”, “travando”.
 
+Frontend contextualizado:
+
+Dropdown de Produto (Portal, Política de Privacidade, SAC, App).
+
+Histórico de últimos 5 feedbacks por produto.
+
+Tema escuro estilizado e badges coloridas (POSITIVO/NEGATIVO/NEUTRO).
+
+API REST estruturada:
+
+GET /api/v1/healthz → health check.
+
+GET /api/v1/ping → resposta rápida {ok: true}.
+
+POST /api/v1/analyze → análise de texto.
+
+▶️ Como rodar localmente
+🔹 Requisitos
+
+Python 3.10+
+
+Node.js 18+
+
+npm
+
+🔹 Backend
 cd backend
 python -m venv venv
 
-# Windows (PowerShell)
+
+Ativar ambiente virtual:
+
+Windows (PowerShell):
+
 .\venv\Scripts\Activate.ps1
 
-# Linux/Mac
+
+Linux/Mac:
+
 source venv/bin/activate
 
+
+Instalar dependências e rodar servidor:
+
 pip install -r requirements.txt
-uvicorn app.main:app --port 8000
+uvicorn app.main:app --reload --port 8000
+
 
 Testes rápidos:
-http://localhost:8000/api/v1/healthz → {"status":"ok"}
 
-http://localhost:8000/api/v1/ping → {"ok": true}
+http://localhost:8000/api/v1/healthz
+ → {"status":"ok"}
 
-Docs Swagger: http://localhost:8000/docs
+http://localhost:8000/api/v1/ping
+ → {"ok":true}
 
-### FRONTEND
-Crie o arquivo .env dentro de frontend/ com:
+Swagger: http://localhost:8000/docs
+
+🔹 Frontend
+
+Crie um arquivo .env dentro de frontend/ com:
+
 VITE_API_BASE_URL=http://localhost:8000/api/v1
-Depois rode:
+
+
+Rodar:
+
 cd frontend
 npm install
 npm run dev
 
-# abra http://localhost:5173
 
-Endpoints principais
+Abrir no navegador:
+👉 http://localhost:5173
 
--GET /api/v1/healthz
-{"status":"ok"}
+📡 Exemplo de Requisição/Resposta
 
--GET /api/v1/ping
-{"ok":true}
-POST /api/v1/analyze
-
-EX: Request (JSON)
+Request (POST /api/v1/analyze):
 
 {
   "task": "sentiment",
@@ -80,7 +115,7 @@ EX: Request (JSON)
 }
 
 
-EX: Response (JSON)
+Response:
 
 {
   "id": "uuid",
@@ -91,3 +126,18 @@ EX: Response (JSON)
   "received_at": "2025-09-20T00:00:00Z"
 }
 
+✅ Checklist atendido
+
+ Backend em FastAPI com endpoints /analyze, /healthz, /ping.
+
+ Processamento real (não mockado) em PT/EN.
+
+ Frontend em React consumindo API.
+
+ Estados de loading e erro implementados.
+
+ Layout estilizado com feedback visual claro.
+
+ Código modular (API → Service → Schema).
+
+ README explicativo e exemplo de execução.
